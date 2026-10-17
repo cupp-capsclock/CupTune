@@ -1,74 +1,78 @@
-# CupTune — Your Music, Your Vibe.
+<div align="center">
 
-Aplikasi penemuan dan pemutaran musik berbasis web (mobile-first, gelap, aksen biru muda) by **MkdirCup**.
-Next.js 14 (App Router) · TypeScript strict · Tailwind CSS · Zustand · Lucide.
+<img src="public/icons/icon-512.png" alt="Logo CupTune" width="120" height="120" />
 
-## Menjalankan lokal
+# CupTune
 
-```bash
-npm install
-cp .env.example .env.local     # isi YOUTUBE_API_KEY
-npm run dev                    # http://localhost:3000
-npm run typecheck && npm run lint && npm run build
-```
+**Your Music, Your Vibe.**
 
-## Environment variable
+Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap, dan bisa dipasang sebagai PWA.
 
-| Nama | Wajib | Keterangan |
-|---|---|---|
-| `YOUTUBE_API_KEY` | ya, untuk konten YouTube | YouTube Data API v3. Boleh beberapa key dipisah koma; otomatis pindah key saat kuota habis. **Server-only** — jangan pakai prefix `NEXT_PUBLIC_`. |
+![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-4.5-433e38)
+![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white)
 
-Tanpa key, aplikasi tetap berjalan: Beranda menampilkan pemberitahuan dan audio lokal dari perangkat tetap bisa diputar.
+</div>
 
-> Jika key lama pernah dipublikasikan di GitHub, **revoke** lalu buat key baru di Google Cloud Console dan batasi ke YouTube Data API v3.
+---
 
-## Arsitektur
+## Daftar Isi
 
-```
-app/api/youtube/{search,chart,playlist,status}   proxy server → YouTube Data API v3 (key tidak keluar ke browser)
-lib/server/        klien YouTube (timeout 8 dtk, validasi respons, cache TTL, rotasi key), rate limit 90 req/menit/IP
-lib/player/engine  satu engine global: YouTube IFrame Player + <audio> untuk berkas lokal
-stores/            player, progress (terpisah agar bar progres tidak me-render ulang UI), library (IndexedDB), settings, dll.
-components/        UI; app/ halaman: Beranda, Cari, Pustaka, Playlist, Playlist YouTube (/yt/[id]), Pengaturan
-```
+- [Fitur](#fitur)
+- [Tech Stack](#tech-stack)
+- [Memulai](#memulai)
+- [Environment Variable](#environment-variable)
+- [Struktur Proyek](#struktur-proyek)
+- [Lirik](#lirik)
+- [Deploy](#deploy)
+- [Skrip](#skrip)
+- [Kontribusi](#kontribusi)
+- [Kredit](#kredit)
 
-Penyimpanan: IndexedDB (pustaka, playlist, antrean, riwayat, berkas audio lokal), localStorage hanya untuk preferensi dan riwayat pencarian. Tidak ada cloud sync.
+## Fitur
 
-## Kuota YouTube API (penting)
+- **Penemuan musik** — Beranda dengan chart populer, pencarian, dan playlist.
+- **Pemutar lengkap** — mini-player, pemutar layar penuh, antrean, dan kontrol lock screen lewat Media Session.
+- **Audio lokal** — putar MP3/M4A dari perangkat; metadata dibaca dari tag ID3v2.3/2.4.
+- **Pustaka & playlist** — simpan lagu, buat playlist, riwayat putar; semuanya tersimpan di perangkat (IndexedDB).
+- **Lirik** — lirik sinkron (LRC) dari LRCLIB, dengan pencocokan ketat dan penyesuaian ±0,5 detik.
+- **Equalizer & visualizer** — equalizer, serta visualizer nyata untuk audio lokal.
+- **PWA** — dapat dipasang ke layar utama dengan ikon maskable; Wake Lock menjaga layar tetap menyala saat memutar.
+- **Aman by design** — API key hanya hidup di server, dengan rate limit dan cache.
 
-`search.list` = 100 unit; `videos.list`/`playlists.list`/`playlistItems.list` = 1 unit. Kuota default 10.000 unit/hari ≈ 100 pencarian.
-Mitigasi: section Beranda baru memuat saat terlihat di layar, "Hits/Populer/Pilihan Cepat" memakai chart `mostPopular` (1 unit), cache server (30 mnt–6 jam) dan cache browser.
+## Tech Stack
 
-## Batasan provider (jujur)
+| Lapisan | Teknologi |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Bahasa | TypeScript (strict) |
+| Styling | Tailwind CSS |
+| State | Zustand |
+| Ikon | Lucide |
+| Penyimpanan | IndexedDB + localStorage |
+| Pemutaran | IFrame Player API + `<audio>` |
+| Lirik | LRCLIB |
 
-- Playback YouTube memakai **IFrame Player resmi**. Tidak ada ekstraksi/unduh stream (library Python di repo asal memakai yt-dlp; itu **tidak** dipakai).
-- Iframe harus terlihat. Di mode mini-player ukurannya kecil (48 px); di pemutar penuh 16:9 selebar layar (≥200 px tinggi pada layar ≥356 px). Mini-player di bawah ukuran minimum 200×200 yang disarankan YouTube — pertimbangkan sebelum rilis publik.
-- Pemutaran latar belakang/lock screen untuk YouTube **tidak dijamin**: browser mobile umumnya menjeda iframe saat layar mati. Mitigasi yang dipasang: Wake Lock (layar tetap menyala saat memutar, bisa dimatikan di Pengaturan), Media Session (kontrol lockscreen + posisi), dan percobaan lanjut otomatis (maks. 3×) jika sistem menjeda saat layar mati. Hasilnya bergantung browser; PWA (Add to Home Screen) membantu tampilan, bukan jaminan background play.
-- Visualizer hanya nyata untuk **audio lokal** (AnalyserNode). Iframe YouTube lintas-origin tidak memberi data audio, jadi untuk lagu YouTube tidak ada visualizer; yang ada hanya glow sampul yang berdenyut (dekoratif, tidak mengikuti musik).
-- Volume iframe tidak berpengaruh di iOS (gunakan tombol perangkat).
-- Video yang tidak boleh di-embed difilter; yang tetap gagal menampilkan pesan dan otomatis melompat ke lagu berikutnya (maks. 2 kali berturut-turut).
-- Audio lokal (MP3/M4A/dll.) disimpan di IndexedDB dan memakai kontrol penuh; metadata hanya dari nama berkas.
 
 ## Lirik
 
-- Sumber: **LRCLIB** (lrclib.net), database lirik komunitas terbuka dengan API publik tanpa kunci, diakses lewat proxy server `app/api/lyrics`.
-- Lirik sinkron hanya ditampilkan jika data berisi timestamp LRC. Jika tidak ada, tampil lirik biasa (berlabel tanpa sinkronisasi) atau pesan "Lirik belum tersedia". Lirik tidak pernah dibuat/ditebak.
-- Pencocokan otomatis ketat (judul cocok + selisih durasi ≤ 5 dtk); jika ragu, tidak ditampilkan dan pengguna bisa memilih manual lewat tombol cari. Pilihan disimpan di localStorage (maks. 40 lagu).
-- Judul YouTube dibersihkan ("Official Video", "[Lyrics]", format "Artis - Judul"). Tombol ±0,5 dtk menggeser sinkronisasi bila video punya intro berbeda.
-- Catatan lisensi: lirik tetap berhak cipta. LRCLIB adalah sumber komunitas, bukan penyedia berlisensi (seperti Musixmatch). Pertimbangkan penyedia berlisensi sebelum rilis publik/komersial.
+- **Sumber:** [LRCLIB](https://lrclib.net) — database lirik komunitas dengan API publik tanpa kunci, diakses lewat proxy `app/api/lyrics`.
+- **Sinkronisasi:** lirik sinkron hanya tampil jika data memuat timestamp LRC; jika tidak, tampil lirik biasa atau pesan "Lirik belum tersedia". Lirik tidak pernah dibuat atau ditebak.
+- **Pencocokan:** otomatis hanya jika judul cocok dan selisih durasi ≤ 5 detik. Jika ragu, pengguna dapat memilih manual (maks. 40 pilihan tersimpan).
+- **Pembersihan judul:** "Official Video", "[Lyrics]", dan format "Artis - Judul" dinormalisasi.
 
-## Metadata audio lokal
+> [!NOTE]
+> Lirik tetap berhak cipta, dan LRCLIB adalah sumber komunitas, bukan penyedia berlisensi. Pertimbangkan penyedia berlisensi (mis. Musixmatch) sebelum rilis publik atau komersial.
 
-Judul/artis/album dibaca dari tag ID3v2.3/2.4 (MP3). Format lain (M4A, FLAC, dll.) memakai nama berkas. Sampul tersemat belum dibaca.
+## Deploy
 
-## Status pengujian
+Dioptimalkan untuk [Vercel](https://vercel.com):
 
-Kode ini ditulis tanpa akses jaringan sehingga `npm install`, `next build`, lint, dan uji browser **belum dijalankan**. Wajib dijalankan sebelum deploy: `npm run typecheck`, `npm run lint`, `npm run build`, lalu uji manual (mobile & desktop, pencarian, antrean, playlist, error API).
+1. Push repositori ke GitHub (pastikan `.env.local` tidak ikut ter-commit).
+2. Import proyek di Vercel.
+3. Tambahkan `YOUTUBE_API_KEY` di **Project Settings → Environment Variables**.
+4. Deploy.
 
-## Deploy (Vercel)
-
-1. Push ke GitHub (jangan commit `.env.local`).
-2. Import di Vercel → set `YOUTUBE_API_KEY` di Project Settings → Environment Variables.
-3. Deploy. (Rate limit & cache server bersifat per-instance; untuk skala besar pindahkan ke KV/Redis.)
-
-© 2026 CupTune — Made by MkdirCup
+> Rate limit dan cache server bersifat per-instance. Untuk skala besar, pindahkan k
