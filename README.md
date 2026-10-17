@@ -65,14 +65,3 @@ Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap,
 
 > [!NOTE]
 > Lirik tetap berhak cipta, dan LRCLIB adalah sumber komunitas, bukan penyedia berlisensi. Pertimbangkan penyedia berlisensi (mis. Musixmatch) sebelum rilis publik atau komersial.
-
-## Deploy
-
-Dioptimalkan untuk [Vercel](https://vercel.com):
-
-1. Push repositori ke GitHub (pastikan `.env.local` tidak ikut ter-commit).
-2. Import proyek di Vercel.
-3. Tambahkan `YOUTUBE_API_KEY` di **Project Settings → Environment Variables**.
-4. Deploy.
-
-> Rate limit dan cache server bersifat per-instance. Untuk skala besar, pindahkan k
