@@ -8,11 +8,14 @@
 
 Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap, dan bisa dipasang sebagai PWA.
 
+*by **MkdirCup***
+
 ![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Zustand](https://img.shields.io/badge/Zustand-4.5-433e38)
 ![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white)
+![Made by](https://img.shields.io/badge/made%20by-MkdirCup-7db4ff)
 
 </div>
 
@@ -22,14 +25,8 @@ Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap,
 
 - [Fitur](#fitur)
 - [Tech Stack](#tech-stack)
-- [Memulai](#memulai)
-- [Environment Variable](#environment-variable)
-- [Struktur Proyek](#struktur-proyek)
 - [Lirik](#lirik)
-- [Deploy](#deploy)
-- [Skrip](#skrip)
-- [Kontribusi](#kontribusi)
-- [Kredit](#kredit)
+- [Pembuat](#pembuat)
 
 ## Fitur
 
@@ -55,7 +52,6 @@ Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap,
 | Pemutaran | IFrame Player API + `<audio>` |
 | Lirik | LRCLIB |
 
-
 ## Lirik
 
 - **Sumber:** [LRCLIB](https://lrclib.net) — database lirik komunitas dengan API publik tanpa kunci, diakses lewat proxy `app/api/lyrics`.
@@ -65,3 +61,15 @@ Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap,
 
 > [!NOTE]
 > Lirik tetap berhak cipta, dan LRCLIB adalah sumber komunitas, bukan penyedia berlisensi. Pertimbangkan penyedia berlisensi (mis. Musixmatch) sebelum rilis publik atau komersial.
+
+## Pembuat
+
+**CupTune** dibuat dan dikembangkan oleh **MkdirCup**.
+
+---
+
+<div align="center">
+
+© 2026 CupTune — Made by **MkdirCup**
+
+</div>
