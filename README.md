@@ -15,7 +15,6 @@ Aplikasi penemuan dan pemutaran musik berbasis web — mobile-first, tema gelap,
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Zustand](https://img.shields.io/badge/Zustand-4.5-433e38)
 ![PWA](https://img.shields.io/badge/PWA-ready-5A0FC8?logo=pwa&logoColor=white)
-![Made by](https://img.shields.io/badge/made%20by-MkdirCup-7db4ff)
 
 </div>
 
